@@ -17,6 +17,7 @@ async function main() {
     let mnemonic;
     let n = 10;
     let network;
+    let networkish;
     const networks = new Set(["mainnet","goerli"]); // need more networks here !!
 
     let index;
@@ -28,23 +29,31 @@ async function main() {
     let balance = ethers.BigNumber.from(0);
     let balanceString;
 
-    if (process.argv.length >= 2) {
+    if (process.argv.length >= 3) {
 	    mnemonic = process.argv[2];
         console.log("mnemonic =", mnemonic);
     } else {
-        throw new Error("usage : 'seed words string ...' number-of-accounts network");
+        throw("usage : 'seed words string ...' number-of-accounts network");
     }
 
-    if (process.argv.length >= 3) {
+    if (process.argv.length >= 4) {
 	    n = process.argv[3];
     }
     console.log("accounts to generate =", n);
 
-    if (process.argv.length >= 4) {
-	    network = process.argv[4];
+    if (process.argv.length >= 5) {
+	    networkish = process.argv[4];
+        console.log("network name / chainId =", networkish);
+
+        if (isNaN(parseInt(networkish))) {
+            network = ethers.providers.getNetwork(networkish);
+        } else {
+            network = ethers.providers.getNetwork(parseInt(networkish));
+        }
+            
         provider = new ethers.providers.AlchemyProvider(network, 'demo');
+        console.log("network to get account balances from =", provider.network);
     }
-    console.log("network to get account balances from =", provider.network);
 
     wallet = ethers.Wallet.fromMnemonic(mnemonic);
     console.log("  0", (derivePath + "  ").substring(0,18), "  0", wallet.address + ' <== to be expected for index 0');
@@ -58,7 +67,7 @@ async function main() {
         address = hdnode.publicKey;
         pk = hdnode.privateKey;
         wallet = new ethers.Wallet(pk);
-        if (network !== undefined && networks.has(network)) {
+        if (networkish !== undefined) {
             balance = await provider.getBalance(wallet.address);
             balanceString = ethers.utils.formatUnits(balance) + " ETH";
         } else {

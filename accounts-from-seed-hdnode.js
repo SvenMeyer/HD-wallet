@@ -79,6 +79,8 @@ async function main() {
 
     // HDNode version
 
+    console.log("  #|derivation path --|idx|------------- public address -------------|--------------------------- private key --------------------------|balance");
+
     let hdnodeParent = ethers.utils.HDNode.fromMnemonic(mnemonic);
 
     for (i=0; i<n; i++) {

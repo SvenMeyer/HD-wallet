@@ -4,6 +4,7 @@
 // Resources :
 // https://ethereum.stackexchange.com/questions/84615/recover-all-the-account-under-mnemonic-using-ethers-js
 // https://github.com/bethanyuo/HD-wallet/blob/master/eth-hd-wallet.js
+// https://medium.com/coinmonks/hd-wallets-in-ethers-js-e173190e4858
 
 async function main() {
 

@@ -14,6 +14,7 @@ async function main() {
     let mnemonic;
     let n = 10;
     let network;
+    const networks = new Set(["mainnet","goerli"]);
 
     let index;
     let path;
@@ -24,20 +25,11 @@ async function main() {
     let balance = ethers.BigNumber.from(0);
     let balanceString;
 
-    if (process.argv.length <2 ) {
-	    console.log("usage : 'seed words string ...' number-of-accounts network");
-        console.log("process.argv[0] =", process.argv[0]);
-        console.log("process.argv[1] =", process.argv[1]);
-        console.log("process.argv[2] =", process.argv[2]);
-        console.log("process.argv[3] =", process.argv[3]);
-        console.log("process.argv[4] =", process.argv[4]);
-    }
-
     if (process.argv.length >= 2) {
 	    mnemonic = process.argv[2];
         console.log("mnemonic =", mnemonic);
     } else {
-        throw new Error("no mnemonic provided");
+        throw new Error("usage : 'seed words string ...' number-of-accounts network");
     }
 
     if (process.argv.length >= 3) {
@@ -52,9 +44,9 @@ async function main() {
     console.log("network to get ETH account balances from =", network);
 
     wallet = ethers.Wallet.fromMnemonic(mnemonic);
+    console.log("  0", (derivePath + "  ").substring(0,18), "  0", wallet.address + ' <== to be expected for index 0');
+
     let hdnodeParent = ethers.utils.HDNode.fromMnemonic(mnemonic);
-    
-    console.log(0, derivePath, 0, wallet.address + ' <== to be expected for index 0');
 
     for (i=0; i<n; i++) {
         path = derivePath.slice(0,-1) + i;
@@ -63,12 +55,15 @@ async function main() {
         address = hdnode.publicKey;
         pk = hdnode.privateKey;
         wallet = new ethers.Wallet(pk);
-        if (network != "") {
+        if (network !== undefined && networks.has(network)) {
             balance = await provider.getBalance(wallet.address);
             balanceString = ethers.utils.formatUnits(balance) + " ETH";
+        } else {
+            balanceString = "";
         }
-        console.log(i, path, index, wallet.address, pk, balanceString);
+        console.log(("  " + i).slice(-3), (path + "  ").substring(0,18), ("  " + index).slice(-3), wallet.address, pk, balanceString);
     }
 }
 
 main();
+

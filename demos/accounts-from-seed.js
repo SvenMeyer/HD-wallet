@@ -8,13 +8,16 @@
 async function main() {
 
     let ethers = require('ethers');
+    let alchemySDK = require('alchemy-sdk');
+
+    // console.log(alchemySDK.Network);  // Does NOT work with these values !!
 
     let derivePath = ethers.utils.defaultPath; // "m/44'/60'/0'/0/0"
 
     let mnemonic;
     let n = 10;
     let network;
-    const networks = new Set(["mainnet","goerli"]);
+    const networks = new Set(["mainnet","goerli"]); // need more networks here !!
 
     let index;
     let path;
@@ -41,7 +44,7 @@ async function main() {
 	    network = process.argv[4];
         provider = new ethers.providers.AlchemyProvider(network, 'demo');
     }
-    console.log("network to get ETH account balances from =", network);
+    console.log("network to get account balances from =", provider.network);
 
     wallet = ethers.Wallet.fromMnemonic(mnemonic);
     console.log("  0", (derivePath + "  ").substring(0,18), "  0", wallet.address + ' <== to be expected for index 0');
